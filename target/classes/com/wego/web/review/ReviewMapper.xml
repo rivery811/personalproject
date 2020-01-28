@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wego.web.review.ReviewMapper">
+
+	<select id="createReview" parameterType="hashmap">
+		${CREATE_REVIEW}
+	</select>
+	<select id="createLike" parameterType="hashmap">
+		${CREATE_LIKE}
+	</select>
+	<select id="createComment" parameterType="hashmap">
+		${CREATE_COMMENT}
+	</select>
+
+	<select id="dropReview" parameterType="map">
+		${DROP_TABLE}
+	</select>
+
+	<select id="truncateReview" parameterType="hashmap">
+		${TRUNCATE}
+	</select>
+
+	<select id="reviewlist" parameterType="int"
+		resultType="com.wego.web.review.Review">
+		SELECT * FROM community WHERE boardtype LIKE 'review' ORDER
+		BY artseq desc Limit #{startRow}, #{pageSize}
+	</select>
+	<select id="allreviewlist"
+		resultType="com.wego.web.review.Review">
+		SELECT * FROM community WHERE boardtype LIKE 'review' ORDER
+		BY artseq desc
+	</select>
+
+	<insert id="insertReview"
+		parameterType="com.wego.web.review.Review">
+		insert into community(UID,IMG,BOARDTYPE,TITLE,CONTENT)
+		values
+		(#{uid},#{img},#{boardtype},#{title},#{content})
+	</insert>
+	<select id="countCommunity" resultType="int">
+		SELECT COUNT(*) FROM
+		community
+	</select>
+	<insert id="insertComment"
+		parameterType="com.wego.web.review.Comment">
+		insert into comment
+		(COMMENTS,ARTSEQ,UID) values
+		(#{comments},#{artseq},#{uid})
+	</insert>
+
+	<select id="getcomment" parameterType="int"
+		resultType="com.wego.web.review.Comment">
+		SELECT * FROM comment WHERE artseq LIKE #{artseq}
+	</select>
+	<select id="selectbyuid"
+		parameterType="com.wego.web.review.Review" resultType="string">
+		SELECT
+		MAX(artseq) FROM community WHERE uid LIKE #{uid}
+	</select>
+
+	<insert id="insertIMG"
+		parameterType="com.wego.web.review.Review">
+		update community set img = #{img} where artseq like
+		#{artseq}
+	</insert>
+
+	<select id="getLike" parameterType="String"
+		resultType="com.wego.web.review.Like">
+		SELECT * FROM liketo WHERE artseq LIKE #{artseq} and uid
+		like #{uid}
+	</select>
+	<insert id="insertLike" parameterType="com.wego.web.review.Like">
+		insert into liketo
+		(ARTSEQ,UID,LIKECHECK) values (#{artseq},#{uid},#{likecheck})
+	</insert>
+	<update id="updatelikecnt"
+		parameterType="com.wego.web.review.Review">
+		update community set likecnt = #{likecnt} where artseq =
+		#{artseq}
+	</update>
+	<update id="updatelikecheck"
+		parameterType="com.wego.web.review.Like">
+		update liketo set likecheck = #{likecheck} where artseq
+		LIKE #{artseq} and
+		uid like #{uid}
+	</update>
+	<select id="likecount" parameterType="String" resultType="int">
+		SELECT
+		count(*) FROM liketo WHERE artseq LIKE #{artseq} and likecheck like 1
+	</select>
+	<select id="liked" parameterType="com.wego.web.review.Like"
+		resultType="String">
+		SELECT likecheck FROM liketo WHERE artseq LIKE #{artseq}
+		and uid like #{uid}
+	</select>
+	<delete id="delete" parameterType="string">
+		DELETE FROM liketo,community
+		USING liketo inner JOIN community ON
+		community.ARTSEQ=liketo.ARTSEQ
+		WHERE community.artseq LIKE #{artseq}
+	</delete>
+	<delete id="commentdelete" parameterType="string">
+		DELETE FROM comment
+		WHERE commentno LIKE #{commentno}
+	</delete>
+	<update id="update" parameterType="com.wego.web.review.Review">
+		UPDATE community SET title =
+		#{title},content = #{content} WHERE artseq LIKE #{artseq}
+	</update>
+	<select id="uidlist"></select>
+
+</mapper>
